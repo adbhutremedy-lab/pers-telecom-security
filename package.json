@@ -1,6 +1,6 @@
 {
   "name": "pers-telecom-security",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "PERS Telecom Security - Incident Management and RRT Dispatch System",
   "scripts": {
@@ -13,6 +13,9 @@
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "clsx": "^2.1.1",
+    "exceljs": "^4.4.0",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.49.0",
     "mapbox-gl": "^3.32.0",
     "next": "15.5.27",

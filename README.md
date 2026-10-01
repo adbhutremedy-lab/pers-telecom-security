@@ -1,9 +1,9 @@
 # PERS Telecom Security
 Incident Management and RRT Dispatch System — demo build, Gurugram, Haryana, India.
 
-**Status: Phase 1 (database), Phase 2 (control-room web app) and Phase 3 (RRT mobile PWA) complete. Phase 4 (reports PDF/Excel/CSV, admin panel, final rehearsal) NOT started — waiting for approval.**
+**Status: ALL FOUR PHASES COMPLETE — Phase 1 (database), Phase 2 (control-room web app), Phase 3 (RRT mobile PWA), Phase 4 (reports PDF/Excel/CSV, admin panel, final rehearsal and demo script).**
 
-New here? Follow `docs/PHASE1_SETUP_GUIDE.md` (database, accounts), then `docs/PHASE2_DEPLOY_GUIDE.md` (GitHub, Vercel, first login), then `docs/PHASE3_PHONE_GUIDE.md` (the RRT phone app, demo script).
+New here? Follow `docs/PHASE1_SETUP_GUIDE.md` (database, accounts), then `docs/PHASE2_DEPLOY_GUIDE.md` (GitHub, Vercel, first login), then `docs/PHASE3_PHONE_GUIDE.md` (the RRT phone app), then `docs/PHASE4_FINAL_GUIDE.md` (reports, admin panel, final rehearsal and the demo script).
 
 ## Folder map
 
@@ -14,17 +14,22 @@ PERS/
 ├─ docs/
 │   ├─ PHASE1_SETUP_GUIDE.md               step-by-step guide: Supabase, Mapbox, GitHub, Vercel accounts
 │   ├─ PHASE2_DEPLOY_GUIDE.md              step-by-step guide: upload to GitHub, deploy on Vercel, first login, demo
-│   └─ PHASE3_PHONE_GUIDE.md               step-by-step guide: update database, install the phone app, demo script, optional push alerts
+│   ├─ PHASE3_PHONE_GUIDE.md               step-by-step guide: update database, install the phone app, demo script, optional push alerts
+│   └─ PHASE4_FINAL_GUIDE.md               step-by-step guide: reports, admin panel, Excel import, final rehearsal checklist and 15-minute demo script
 ├─ src/                                    the Next.js web app (Phase 2)
 │   ├─ middleware.ts                       keeps the login session fresh, sends signed-out visitors to /login
 │   ├─ lib/                                Supabase clients, formatting (India time), demo simulation maths
 │   ├─ hooks/                              live data + realtime refresh
 │   ├─ components/                         map, tiles, incident cards, tower panel, trigger dialog, shell
+│   ├─ lib/reports/                        report data (paged, India time, summary maths) and PDF / Excel / CSV export (Phase 4)
 │   ├─ components/rrt/                     phone app: RrtApp, OfferOverlay (siren + countdown), JobScreen, JobMap, ResolveForm, History, Account
+│   ├─ components/reports/                 hand-built charts (columns, bars, outcome bar)
+│   ├─ components/admin/                   Admin tabs: Towers, Teams, Users, Forms, Settings, Excel import, Change log (Phase 4)
 │   └─ app/
 │       ├─ login/                          sign-in page
 │       ├─ (app)/dashboard, incidents, incidents/[id], towers, teams, demo   control-room pages
-│       ├─ (app)/reports                   placeholder (Phase 4)
+│       ├─ (app)/reports                   reports: filters, tiles, charts, PDF / Excel / CSV downloads (Phase 4)
+│       ├─ (app)/admin                     admin panel, Administrator + Super Admin only (Phase 4)
 │       ├─ rrt/                            the RRT phone app (Phase 3): layout (guard + PWA tags) and page
 │       └─ api/push/                       optional relay that delivers lock-screen alerts (Phase 3)
 ├─ public/                                 PWA: manifest, service worker (alerts + offline page), icons (Phase 3)
@@ -32,6 +37,7 @@ PERS/
     ├─ PASTE_1_all_migrations.sql          the 10 migrations in ONE file (paste into SQL Editor)
     ├─ PASTE_2_all_seed_data.sql           the 4 seed files in ONE file
     ├─ PASTE_3_phase3_phone_support.sql    migration 0011 (server clock + optional push) — run once for Phase 3
+    ├─ PASTE_4_phase4_admin.sql            migration 0012 (admin functions) — run once for Phase 4
     ├─ migrations/                         the same files, separately, in run order
     │   ├─ 0001_extensions_and_enums.sql
     │   ├─ 0002_tables.sql
@@ -43,7 +49,8 @@ PERS/
     │   ├─ 0008_rls_policies.sql
     │   ├─ 0009_storage_realtime_cron.sql
     │   ├─ 0010_reference_data.sql
-    │   └─ 0011_phone_support_and_push.sql   Phase 3: server_time(), push subscriptions + relay hooks
+    │   ├─ 0011_phone_support_and_push.sql   Phase 3: server_time(), push subscriptions + relay hooks
+    │   └─ 0012_admin_and_import.sql         Phase 4: create login, set password, edit user, import towers/teams, reorder/duplicate forms
     ├─ seed/
     │   ├─ seed_01_towers_and_teams.sql    30 Gurugram towers, 10 RRT teams
     │   ├─ seed_02_users.sql               14 login accounts (+ profiles)
@@ -51,7 +58,8 @@ PERS/
     │   └─ seed_04_more_towers.sql         70 more towers (GGN-031…100) — Phase 2 addition, run once
     └─ tests/
         ├─ phase1_health_check.sql         structure + security + data checks
-        └─ phase1_dispatch_test.sql        57-step end-to-end test (cleans up after itself)
+        ├─ phase1_dispatch_test.sql        57-step end-to-end test (cleans up after itself)
+        └─ phase4_admin_test.sql           33-step test of the admin functions (cleans up after itself)
 ```
 
 ## Run the web app
@@ -63,6 +71,12 @@ On Vercel: see `docs/PHASE2_DEPLOY_GUIDE.md`. On a computer with Node 20+: copy 
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key — never the secret key |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Mapbox public token `pk.…` |
+
+## Phase 4: reports and admin panel
+
+**Reports** (`/reports`, all staff): periods (today … last month, all time, custom), region filter, six tiles, incidents per day/week/month, outcome bar, by region, RRT team table, busiest towers, incident list. Downloads built in the browser: **PDF** (landscape summary report), **Excel** (Summary, Incidents, By team, By tower, By region, By day/week/month, Resolution answers), **CSV** (UTF-8, spreadsheet-formula safe) and a **one-incident PDF** with timeline, offers, answers and photos (from the report list or the incident page). All times India time; up to 10,000 incidents per report.
+
+**Admin** (`/admin`, Administrator + Super Admin): Towers (add, edit, archive/restore), Teams, Users (Super Admin creates logins with a generated password, resets passwords, changes roles; Administrator edits operators/phone users), Forms (default form, duplicate, question editor with reorder), Settings (dispatch rules, Super Admin only, range-checked by the database), Excel/CSV import of towers and teams (template download, every row checked first, nothing saved while any row has a problem, up to 2,000 towers / 500 teams), Change log (latest 200 changes). Login creation uses SQL inside the database — no Supabase secret key is needed.
 
 ## Phase 3: the RRT phone app (`/rrt`)
 
@@ -113,12 +127,23 @@ Background jobs (pg_cron): expire offers every 5 s; retry/redispatch/offline swe
 | `report_summary(p_from, p_to, p_region)` | staff | report cover numbers |
 | `create_demo_tower(p_lat, p_lng, p_offset_m)` | admin | tower 30 m away for the demo |
 | `reset_demo()` | admin | remove demo incidents, park simulated teams |
+| `admin_create_user(p_email, p_password, p_full_name, p_role, p_phone, p_team_id)` | Super Admin | create a login |
+| `admin_set_password(p_user_id, p_password)` | Super Admin | reset a password |
+| `admin_update_user(p_user_id, p_full_name, p_phone, p_role, p_team_id, p_is_active)` | admin (limits for Administrator) | edit / deactivate a person |
+| `admin_import_towers(p_rows, p_dry_run)`, `admin_import_teams(p_rows, p_dry_run)` | admin | check (dry run) or load an Excel/CSV import |
+| `admin_reorder_questions(p_form_id, p_ids)`, `admin_duplicate_form(p_form_id, p_name)` | admin | form editor helpers |
 | `server_time()` | signed-in | database clock for the phone's countdown |
 | `register_push(...)`, `unregister_push(p_endpoint)` | signed-in | save / remove this phone's alert subscription |
 | `push_targets(p_secret, p_user_id)`, `push_report(...)` | the push relay only (shared secret) | look up phones, report delivery |
 
 Views for the apps: `v_rrt_live` (map markers), `v_dashboard_stats` (the 7 tiles), `v_incident_detail`, `v_incident_offers`, `v_report_incidents`, `v_tower_incident_counts`.
 Realtime tables: `rrt_teams`, `incidents`, `incident_assignments`, `notifications`, `towers`, `incident_photos`.
+
+## Tested vs not tested — Phase 4 (reports and admin)
+
+Tested: TypeScript type-check and production build pass; browser test of Reports (filters, tiles, chart, region filter, empty period) with the downloaded CSV, Excel and PDF files opened and checked (row counts, sheets, incident numbers, embedded photo); 62-step browser test of the Admin panel (towers, teams, users incl. signing in with a newly created phone login and with a reset password, deactivation, role change, forms editor, settings, Excel/CSV import with good and bad files, change log, Administrator vs Super Admin limits); 33-step database test of the new functions; Phase 2 (23 steps) and Phase 3 (35 steps) browser tests still pass.
+
+Not testable outside your accounts: real Mapbox, the real Android phone, Google push delivery, real Supabase Realtime/storage policies, and the SQL-created login on your own Supabase project (same method as the demo accounts). Rehearse with `docs/PHASE4_FINAL_GUIDE.md` Part 6.
 
 ## Tested vs not tested — Phase 3 (phone app)
 
