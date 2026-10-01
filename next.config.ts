@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "geolocation=(self), camera=(self), microphone=()" },
         ],
       },
+      {
+        // The service worker must always be re-checked so updates reach the phones.
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
     ];
   },
 };

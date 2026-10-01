@@ -1,6 +1,6 @@
 {
   "name": "pers-telecom-security",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "PERS Telecom Security - Incident Management and RRT Dispatch System",
   "scripts": {
@@ -17,7 +17,8 @@
     "mapbox-gl": "^3.32.0",
     "next": "15.5.27",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -25,6 +26,7 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/web-push": "^3.6.4",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "~5.9.3"
