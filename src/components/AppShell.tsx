@@ -24,9 +24,9 @@ const NAV: NavItem[] = [
   { href: "/incidents", label: "Incidents", icon: ListChecks },
   { href: "/towers", label: "Towers", icon: MapPin },
   { href: "/teams", label: "RRT Teams", icon: Users },
-  { href: "/reports", label: "Reports", icon: BarChart3, soon: "Phase 4" },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/demo", label: "Demo Controller", icon: Gauge, adminOnly: true },
-  { href: "/admin", label: "Admin", icon: Settings, adminOnly: true, soon: "Phase 4" },
+  { href: "/admin", label: "Admin", icon: Settings, adminOnly: true },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

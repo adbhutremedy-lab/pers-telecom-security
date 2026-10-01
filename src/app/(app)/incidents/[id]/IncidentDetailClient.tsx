@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowLeft, Ban, CheckCheck, MapPinned, Shuffle } from "lucide-react";
+import { ArrowLeft, Ban, CheckCheck, FileText, MapPinned, Shuffle } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useRealtimeRefetch } from "@/hooks/useRealtimeRefetch";
 import { useNow } from "@/hooks/useNow";
 import { useToast } from "@/components/Toast";
 import { Button, EmptyState, Field, IncidentBadge, Modal, Spinner, TeamBadge, inputCls } from "@/components/ui";
 import LiveMap from "@/components/LiveMap";
+import { downloadBlob, exportIncidentPdf } from "@/lib/reports/export";
 import { cleanError, fmtDateTime, fmtDistance, fmtDuration, fmtTime, haversineKm } from "@/lib/format";
 import type { IncidentAnswer, IncidentDetail, IncidentOffer, IncidentPhoto, RrtLive, Tower } from "@/lib/types";
 
@@ -30,6 +31,7 @@ export default function IncidentDetailClient({ id }: { id: string }) {
   const [pickTeam, setPickTeam] = useState<string>("auto");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const load = useCallback(async () => {
     const sb = supabaseBrowser();
@@ -100,6 +102,17 @@ export default function IncidentDetailClient({ id }: { id: string }) {
   const sb = supabaseBrowser;
   const doCancel = () => run(() => sb().rpc("cancel_incident", { p_incident_id: id, p_reason: reason.trim() || null }), "Incident cancelled");
   const doReassign = () => run(() => sb().rpc("reassign_incident", { p_incident_id: id, p_team_id: pickTeam === "auto" ? null : pickTeam }), "Incident reassigned");
+  const downloadPdf = async () => {
+    setPdfBusy(true);
+    try {
+      const { blob, name } = await exportIncidentPdf(id);
+      downloadBlob(blob, name);
+    } catch (e) {
+      toast.push({ kind: "error", title: "Could not create the PDF", body: cleanError(e) });
+    } finally {
+      setPdfBusy(false);
+    }
+  };
   const doReached = () => run(() => sb().rpc("mark_reached", { p_incident_id: id }), "Arrival recorded");
 
   if (loading) return <div className="grid place-items-center p-16"><Spinner /></div>;
@@ -137,8 +150,12 @@ export default function IncidentDetailClient({ id }: { id: string }) {
             · {inc.tower_name} · {inc.region}
           </p>
         </div>
+        <div className="flex flex-wrap gap-2">
+          <Button tone="outline" onClick={downloadPdf} busy={pdfBusy} data-testid="incident-pdf">
+            <FileText className="h-4 w-4" /> PDF report
+          </Button>
         {isActive && (
-          <div className="flex flex-wrap gap-2">
+          <>
             {inc.status === "ASSIGNED" && (
               <Button tone="outline" onClick={doReached} busy={busy}>
                 <MapPinned className="h-4 w-4" /> Mark reached
@@ -150,8 +167,9 @@ export default function IncidentDetailClient({ id }: { id: string }) {
             <Button tone="danger" onClick={() => { setErr(null); setDialog("cancel"); }}>
               <Ban className="h-4 w-4" /> Cancel incident
             </Button>
-          </div>
+          </>
         )}
+        </div>
       </div>
       {err && !dialog && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}
 
