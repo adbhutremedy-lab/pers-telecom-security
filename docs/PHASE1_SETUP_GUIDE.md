@@ -138,7 +138,7 @@ Rows that may legitimately say FAIL, with the fix:
 
 ---
 
-## What happens next (not started yet)
+## What happens next (all later phases are now built — see the Phase 2, 3 and 4 guides)
 
 | When | Phase | Result |
 |---|---|---|
@@ -146,7 +146,6 @@ Rows that may legitimately say FAIL, with the fix:
 | Day 1–2 | Phase 3 — RRT mobile app (PWA on the Android phone), notifications, resolution form, photos | phone receives and completes an incident |
 | Day 2 | Phase 4 — reports (PDF/Excel/CSV), admin panel, final demo rehearsal | ready to present |
 
-**Waiting for the lead developer's go-ahead before any of this starts.**
 
 ---
 

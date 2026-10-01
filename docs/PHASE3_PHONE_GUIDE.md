@@ -172,6 +172,6 @@ Notes: lock-screen alerts are delivered by Google's push service; a phone in dee
 - [ ] Press **Reset demo** before the audience arrives, then phone → **Go online**
 - [ ] Passwords (`PersDemo@2026`) changed after the demo
 
-## What is next (needs the lead developer's go-ahead)
+## What is next
 
-Phase 4: reports (PDF / Excel / CSV), admin panel (towers, teams, users, forms, Excel import), final rehearsal and demo script.
+Phase 4 (reports, admin panel, final rehearsal and demo script) is done — see `PHASE4_FINAL_GUIDE.md`.

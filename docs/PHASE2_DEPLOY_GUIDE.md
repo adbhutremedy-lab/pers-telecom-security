@@ -143,9 +143,9 @@ The real phone (RRT-01) is never moved by the Demo Controller. If it is OFFLINE 
 - **Demo passwords** (`PersDemo@2026`) must be changed for real people after the demo.
 - Live updates use Supabase Realtime with an automatic refresh every 10–30 seconds as a back-up, so the screen stays correct even if the live connection drops.
 
-## What is next (needs the lead developer's go-ahead)
+## What is next
 
 | Phase | Result |
 |---|---|
 | 3 | RRT mobile app (installable PWA on the Android phone): siren alert with 30-second countdown, accept/reject, navigation, live GPS, resolution form, photos, push notifications — **done, see `PHASE3_PHONE_GUIDE.md`** |
-| 4 | Reports (PDF / Excel / CSV), Admin panel (towers, teams, users, forms, Excel import), final rehearsal |
+| 4 | Reports (PDF / Excel / CSV), Admin panel (towers, teams, users, forms, Excel import), final rehearsal — **done, see `PHASE4_FINAL_GUIDE.md`** |
