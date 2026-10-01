@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckCircle2, ClipboardList, Loader2, Power, Radio, Satellite, ShieldCheck, Siren, UserRound, WifiOff } from "lucide-react";
+import { CheckCircle2, ClipboardList, Loader2, MessagesSquare, Power, Radio, Satellite, ShieldCheck, Siren, UserRound, WifiOff } from "lucide-react";
 import clsx from "clsx";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "@/components/ProfileContext";
@@ -12,7 +12,9 @@ import { useWakeLock } from "@/hooks/useWakeLock";
 import { useServerClock } from "@/hooks/useServerClock";
 import { cleanError, fmtDuration } from "@/lib/format";
 import { registerServiceWorker } from "@/lib/push";
-import { unlockAudio } from "@/lib/sound";
+import { beep, unlockAudio } from "@/lib/sound";
+import { useMessages } from "@/hooks/useMessages";
+import { radioPlayer, type RadioMessage } from "@/lib/radio";
 import { TEAM_COLOR, TEAM_LABEL } from "@/lib/constants";
 import type { NotificationType } from "@/lib/types";
 import OfferOverlay from "./OfferOverlay";
@@ -20,8 +22,9 @@ import JobScreen from "./JobScreen";
 import ResolveForm from "./ResolveForm";
 import HistoryTab from "./HistoryTab";
 import AccountTab, { type InstallEvent } from "./AccountTab";
+import RadioTab from "./RadioTab";
 
-type Tab = "job" | "history" | "account";
+type Tab = "job" | "radio" | "history" | "account";
 
 const GPS_STALE_MS = 90_000;
 
@@ -46,6 +49,53 @@ export default function RrtApp({ teamId }: { teamId: string }) {
   const gpsOn = wantGps || online || job !== null;
   const { fix, fixRef, error: gpsError } = useGps(gpsOn);
   const wake = useWakeLock(online || job !== null);
+
+  // ---- radio: messages from the control room ----------------------------------
+  const tabRef = useRef<Tab>("job");
+  tabRef.current = tab;
+  const markHeard = useCallback(async (ids: string[]) => {
+    if (ids.length === 0) return;
+    await supabaseBrowser().rpc("messages_mark_heard", { p_ids: ids });
+  }, []);
+  const onIncoming = useCallback(
+    (m: RadioMessage) => {
+      if (m.sender_team_id) return; // my own message
+      navigator.vibrate?.([180, 90, 180]);
+      beep("ok");
+      if (m.kind === "VOICE" && m.audio_path) {
+        radioPlayer?.enqueue({ id: m.id, path: m.audio_path, onStart: () => void markHeard([m.id]) });
+      }
+      if (!(tabRef.current === "radio" && document.visibilityState === "visible")) {
+        toast.push({ kind: "info", title: "Control Room", body: m.kind === "TEXT" ? m.body ?? "" : `Voice message (${Math.round(m.audio_seconds ?? 0)} s)`, ms: 8000 });
+      }
+    },
+    [markHeard, toast],
+  );
+  const radio = useMessages(profile.id, onIncoming);
+  const heardIds = new Set(radio.receipts.filter((r) => r.team_id === teamId).map((r) => r.message_id));
+  const unheard = radio.messages.filter((m) => !m.sender_team_id && !heardIds.has(m.id));
+  const unreadCount = unheard.length;
+  // text messages count as read when the Radio tab is open
+  useEffect(() => {
+    if (tab !== "radio") return;
+    const ids = unheard.filter((m) => m.kind === "TEXT").map((m) => m.id);
+    if (ids.length) void markHeard(ids).then(() => radio.refresh());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, unheard.length]);
+  // never talk over the incident siren: voice waits while an offer is on screen
+  const offerOnScreen = online && !reporting && offers.length > 0;
+  useEffect(() => {
+    radioPlayer?.setHold(offerOnScreen);
+  }, [offerOnScreen]);
+  useEffect(() => {
+    const retry = () => radioPlayer?.retryBlocked();
+    document.addEventListener("pointerdown", retry);
+    return () => {
+      document.removeEventListener("pointerdown", retry);
+      radioPlayer?.clearQueue();
+      radioPlayer?.stop();
+    };
+  }, []);
 
   // ---- service worker, install prompt, connectivity -------------------
   useEffect(() => {
@@ -108,7 +158,8 @@ export default function RrtApp({ teamId }: { teamId: string }) {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${profile.id}` },
         (p) => {
-          const n = p.new as { type: NotificationType; title: string; body: string | null; assignment_id: string | null };
+          const n = p.new as { type: NotificationType; title: string; body: string | null; assignment_id: string | null; payload?: { kind?: string } };
+          if (n.payload?.kind === "message") return; // the radio shows messages itself
           void refetch();
           if (n.type === "INCIDENT_OFFER") {
             if (document.visibilityState === "hidden" && "Notification" in window && Notification.permission === "granted") {
@@ -326,6 +377,15 @@ export default function RrtApp({ teamId }: { teamId: string }) {
           </div>
         )}
 
+        {tab === "radio" && (
+          <RadioTab
+            messages={radio.messages}
+            teamId={team.id}
+            loaded={radio.loaded}
+            onPlayed={(m) => void markHeard([m.id]).then(() => radio.refresh())}
+            onSent={() => void radio.refresh()}
+          />
+        )}
         {tab === "history" && <HistoryTab teamId={team.id} refreshKey={historyKey} />}
         {tab === "account" && (
           <AccountTab
@@ -339,10 +399,11 @@ export default function RrtApp({ teamId }: { teamId: string }) {
         )}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-white/10 bg-ink-900/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-white/10 bg-ink-900/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         {(
           [
             ["job", "Job", Siren],
+            ["radio", "Radio", MessagesSquare],
             ["history", "History", ClipboardList],
             ["account", "Account", UserRound],
           ] as const
@@ -356,6 +417,9 @@ export default function RrtApp({ teamId }: { teamId: string }) {
             <Icon className="h-6 w-6" />
             {label}
             {id === "job" && job && <span className="absolute right-[32%] top-2 h-2.5 w-2.5 rounded-full bg-amber-400" />}
+            {id === "radio" && unreadCount > 0 && (
+              <span data-testid="radio-unread" className="absolute right-[28%] top-1.5 min-w-[1.1rem] rounded-full bg-red-600 px-1 text-center text-[11px] font-bold leading-[1.1rem]">{unreadCount}</span>
+            )}
           </button>
         ))}
       </nav>

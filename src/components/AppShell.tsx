@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
-import { BarChart3, Gauge, LayoutDashboard, ListChecks, LogOut, Menu, MapPin, Radio, Settings, Users, X } from "lucide-react";
+import { BarChart3, Gauge, LayoutDashboard, ListChecks, LogOut, Menu, MapPin, MessageSquare, Radio, Settings, Users, X } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { isAdminRole } from "@/lib/types";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useProfile } from "./ProfileContext";
 import NotificationBell from "./NotificationBell";
+import { RadioProvider, useRadio } from "./radio/RadioContext";
 
 interface NavItem {
   href: string;
@@ -25,12 +26,25 @@ const NAV: NavItem[] = [
   { href: "/towers", label: "Towers", icon: MapPin },
   { href: "/teams", label: "RRT Teams", icon: Users },
   { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/messages", label: "Messages", icon: MessageSquare, adminOnly: true },
   { href: "/demo", label: "Demo Controller", icon: Gauge, adminOnly: true },
   { href: "/admin", label: "Admin", icon: Settings, adminOnly: true },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const profile = useProfile();
+  return isAdminRole(profile.role) ? (
+    <RadioProvider>
+      <Shell>{children}</Shell>
+    </RadioProvider>
+  ) : (
+    <Shell>{children}</Shell>
+  );
+}
+
+function Shell({ children }: { children: React.ReactNode }) {
+  const profile = useProfile();
+  const radio = useRadio();
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -66,6 +80,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           >
             <Icon className="h-5 w-5" />
             <span className="flex-1">{n.label}</span>
+            {n.href === "/messages" && (radio?.unread.total ?? 0) > 0 && (
+              <span className="rounded-full bg-red-600 px-1.5 py-0.5 text-[11px] font-bold text-white" data-testid="nav-unread">{radio!.unread.total}</span>
+            )}
             {n.soon && <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide">{n.soon}</span>}
           </Link>
         );

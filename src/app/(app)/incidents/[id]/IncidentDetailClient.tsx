@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowLeft, Ban, CheckCheck, FileText, MapPinned, Shuffle } from "lucide-react";
+import { ArrowLeft, Ban, CheckCheck, FileText, MapPinned, MessageSquare, Shuffle } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { useRealtimeRefetch } from "@/hooks/useRealtimeRefetch";
 import { useNow } from "@/hooks/useNow";
 import { useToast } from "@/components/Toast";
+import { useProfile } from "@/components/ProfileContext";
+import { isAdminRole } from "@/lib/types";
 import { Button, EmptyState, Field, IncidentBadge, Modal, Spinner, TeamBadge, inputCls } from "@/components/ui";
 import LiveMap from "@/components/LiveMap";
 import { downloadBlob, exportIncidentPdf } from "@/lib/reports/export";
@@ -18,6 +20,7 @@ type Dialog = null | "cancel" | "reassign";
 
 export default function IncidentDetailClient({ id }: { id: string }) {
   const toast = useToast();
+  const profile = useProfile();
   const now = useNow(1000);
   const [inc, setInc] = useState<IncidentDetail | null>(null);
   const [offers, setOffers] = useState<IncidentOffer[]>([]);
@@ -154,6 +157,11 @@ export default function IncidentDetailClient({ id }: { id: string }) {
           <Button tone="outline" onClick={downloadPdf} busy={pdfBusy} data-testid="incident-pdf">
             <FileText className="h-4 w-4" /> PDF report
           </Button>
+          {isAdminRole(profile.role) && inc.assigned_team_id && (
+            <Link href={`/messages?team=${inc.assigned_team_id}`} data-testid="message-team" className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <MessageSquare className="h-4 w-4" /> Message team
+            </Link>
+          )}
         {isActive && (
           <>
             {inc.status === "ASSIGNED" && (
