@@ -32,7 +32,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = path === "/login" || path.startsWith("/_next") || path === "/favicon.ico";
+  // /api/push is called by the database with a shared secret (it is not a signed-in user).
+  const isPublic = path === "/login" || path.startsWith("/_next") || path === "/favicon.ico" || path === "/api/push";
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();

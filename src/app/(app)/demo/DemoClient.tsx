@@ -11,6 +11,7 @@ import { useLiveData } from "@/hooks/useLiveData";
 import { useNow } from "@/hooks/useNow";
 import { useProfile } from "@/components/ProfileContext";
 import { useToast } from "@/components/Toast";
+import PushSetupCard from "@/components/PushSetupCard";
 import { Button, Field, Modal, PageHeader, TeamBadge, inputCls } from "@/components/ui";
 import type { CustomQuestion, IncidentDetail, RrtLive } from "@/lib/types";
 
@@ -414,6 +415,10 @@ export default function DemoClient() {
             ))}
           </ul>
         </section>
+      </div>
+
+      <div className="mt-4">
+        <PushSetupCard />
       </div>
 
       <Modal

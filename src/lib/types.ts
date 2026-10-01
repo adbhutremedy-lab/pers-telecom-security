@@ -209,12 +209,15 @@ export interface CustomQuestion {
   form_id: string;
   position: number;
   label: string;
+  help_text: string | null;
   type: QuestionType;
   is_required: boolean;
   options: string[];
   scale_min: number | null;
   scale_max: number | null;
+  multiline: boolean;
   min_files: number;
+  max_files: number;
   is_active: boolean;
 }
 
@@ -231,3 +234,45 @@ export interface TowerSearchHit {
 export const ACTIVE_STATUSES: IncidentStatus[] = ["OPEN", "ASSIGNED", "REACHED"];
 export const isStaffRole = (r: RoleCode | undefined | null) => r === "SUPER_ADMIN" || r === "ADMIN" || r === "OPERATOR";
 export const isAdminRole = (r: RoleCode | undefined | null) => r === "SUPER_ADMIN" || r === "ADMIN";
+
+/** rrt_teams row as the team's own phone sees it */
+export interface MyTeam {
+  id: string;
+  code: string;
+  name: string;
+  mobile: string | null;
+  vehicle_plate: string | null;
+  vehicle_model: string | null;
+  region: string | null;
+  status: TeamStatus;
+  is_active: boolean;
+  is_online_enabled: boolean;
+  last_seen_at: string | null;
+  last_lat: number | null;
+  last_lng: number | null;
+  current_incident_id: string | null;
+}
+
+/** An open (PENDING) offer for this team, with the incident and tower it is about. */
+export interface PhoneOffer {
+  id: string; // assignment id
+  incident_id: string;
+  distance_km: number;
+  offered_at: string;
+  expires_at: string;
+  incident_number: string;
+  tower_number: string;
+  tower_name: string;
+  tower_lat: number;
+  tower_lng: number;
+  region: string | null;
+}
+
+export interface UploadedFile {
+  id: string;
+  question_id: string | null;
+  storage_path: string;
+  file_name: string | null;
+  mime_type: string;
+  kind: "PHOTO" | "FILE";
+}
