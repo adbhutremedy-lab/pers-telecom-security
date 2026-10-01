@@ -1,9 +1,9 @@
 # PERS Telecom Security
 Incident Management and RRT Dispatch System — demo build, Gurugram, Haryana, India.
 
-**Status: ALL FOUR PHASES COMPLETE — Phase 1 (database), Phase 2 (control-room web app), Phase 3 (RRT mobile PWA), Phase 4 (reports PDF/Excel/CSV, admin panel, final rehearsal and demo script).**
+**Status: ALL PHASES COMPLETE — Phase 1 (database), Phase 2 (control-room web app), Phase 3 (RRT mobile PWA), Phase 4 (reports PDF/Excel/CSV, admin panel, final rehearsal and demo script), Phase 5 (client addition: text messages and push-to-talk voice between Super Admin / Administrator and the RRT teams).**
 
-New here? Follow `docs/PHASE1_SETUP_GUIDE.md` (database, accounts), then `docs/PHASE2_DEPLOY_GUIDE.md` (GitHub, Vercel, first login), then `docs/PHASE3_PHONE_GUIDE.md` (the RRT phone app), then `docs/PHASE4_FINAL_GUIDE.md` (reports, admin panel, final rehearsal and the demo script).
+New here? Follow `docs/PHASE1_SETUP_GUIDE.md` (database, accounts), then `docs/PHASE2_DEPLOY_GUIDE.md` (GitHub, Vercel, first login), then `docs/PHASE3_PHONE_GUIDE.md` (the RRT phone app), then `docs/PHASE4_FINAL_GUIDE.md` (reports, admin panel, final rehearsal and the demo script), then `docs/PHASE5_RADIO_GUIDE.md` (messages and push-to-talk voice).
 
 ## Folder map
 
@@ -15,7 +15,8 @@ PERS/
 │   ├─ PHASE1_SETUP_GUIDE.md               step-by-step guide: Supabase, Mapbox, GitHub, Vercel accounts
 │   ├─ PHASE2_DEPLOY_GUIDE.md              step-by-step guide: upload to GitHub, deploy on Vercel, first login, demo
 │   ├─ PHASE3_PHONE_GUIDE.md               step-by-step guide: update database, install the phone app, demo script, optional push alerts
-│   └─ PHASE4_FINAL_GUIDE.md               step-by-step guide: reports, admin panel, Excel import, final rehearsal checklist and 15-minute demo script
+│   ├─ PHASE4_FINAL_GUIDE.md               step-by-step guide: reports, admin panel, Excel import, final rehearsal checklist and 15-minute demo script
+│   └─ PHASE5_RADIO_GUIDE.md               step-by-step guide: messages + push-to-talk voice, microphone permission, demo addition
 ├─ src/                                    the Next.js web app (Phase 2)
 │   ├─ middleware.ts                       keeps the login session fresh, sends signed-out visitors to /login
 │   ├─ lib/                                Supabase clients, formatting (India time), demo simulation maths
@@ -25,11 +26,14 @@ PERS/
 │   ├─ components/rrt/                     phone app: RrtApp, OfferOverlay (siren + countdown), JobScreen, JobMap, ResolveForm, History, Account
 │   ├─ components/reports/                 hand-built charts (columns, bars, outcome bar)
 │   ├─ components/admin/                   Admin tabs: Towers, Teams, Users, Forms, Settings, Excel import, Change log (Phase 4)
+│   ├─ components/radio/                   chat bubbles, hold-to-talk button, control-room message context (Phase 5)
+│   ├─ lib/radio.ts, hooks/useMessages.ts  recorder, voice upload, shared audio player, live message list (Phase 5)
 │   └─ app/
 │       ├─ login/                          sign-in page
 │       ├─ (app)/dashboard, incidents, incidents/[id], towers, teams, demo   control-room pages
 │       ├─ (app)/reports                   reports: filters, tiles, charts, PDF / Excel / CSV downloads (Phase 4)
 │       ├─ (app)/admin                     admin panel, Administrator + Super Admin only (Phase 4)
+│       ├─ (app)/messages                  control-room messages + voice, Administrator + Super Admin only (Phase 5)
 │       ├─ rrt/                            the RRT phone app (Phase 3): layout (guard + PWA tags) and page
 │       └─ api/push/                       optional relay that delivers lock-screen alerts (Phase 3)
 ├─ public/                                 PWA: manifest, service worker (alerts + offline page), icons (Phase 3)
@@ -38,6 +42,7 @@ PERS/
     ├─ PASTE_2_all_seed_data.sql           the 4 seed files in ONE file
     ├─ PASTE_3_phase3_phone_support.sql    migration 0011 (server clock + optional push) — run once for Phase 3
     ├─ PASTE_4_phase4_admin.sql            migration 0012 (admin functions) — run once for Phase 4
+    ├─ PASTE_5_phase5_radio.sql            migration 0013 (messages, receipts, voice bucket) — run once for Phase 5
     ├─ migrations/                         the same files, separately, in run order
     │   ├─ 0001_extensions_and_enums.sql
     │   ├─ 0002_tables.sql
@@ -50,7 +55,8 @@ PERS/
     │   ├─ 0009_storage_realtime_cron.sql
     │   ├─ 0010_reference_data.sql
     │   ├─ 0011_phone_support_and_push.sql   Phase 3: server_time(), push subscriptions + relay hooks
-    │   └─ 0012_admin_and_import.sql         Phase 4: create login, set password, edit user, import towers/teams, reorder/duplicate forms
+    │   ├─ 0012_admin_and_import.sql         Phase 4: create login, set password, edit user, import towers/teams, reorder/duplicate forms
+    │   └─ 0013_messages_and_voice.sql       Phase 5: messages, read receipts, send_message, private voice-messages bucket
     ├─ seed/
     │   ├─ seed_01_towers_and_teams.sql    30 Gurugram towers, 10 RRT teams
     │   ├─ seed_02_users.sql               14 login accounts (+ profiles)
@@ -59,7 +65,8 @@ PERS/
     └─ tests/
         ├─ phase1_health_check.sql         structure + security + data checks
         ├─ phase1_dispatch_test.sql        57-step end-to-end test (cleans up after itself)
-        └─ phase4_admin_test.sql           33-step test of the admin functions (cleans up after itself)
+        ├─ phase4_admin_test.sql           33-step test of the admin functions (cleans up after itself)
+        └─ phase5_radio_test.sql           35-step test of messages and voice rules (cleans up after itself)
 ```
 
 ## Run the web app
@@ -71,6 +78,10 @@ On Vercel: see `docs/PHASE2_DEPLOY_GUIDE.md`. On a computer with Node 20+: copy 
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key — never the secret key |
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Mapbox public token `pk.…` |
+
+## Phase 5: messages and push-to-talk voice
+
+Control room (`/messages`, Super Admin + Administrator only; operators have no access): channels "All online teams" and one per team; text up to 500 characters; hold-to-talk voice clips up to 30 s (slide up to cancel); unread counters, pop-ups, automatic playback of incoming voice; read / played ticks (for broadcasts "heard by n of m"); "Message team" button on the incident page. Phone (`/rrt` → Radio tab): chat with the control room, big hold-to-talk button, automatic playback (waits while an incident alert rings), unread badge, vibration. "All online teams" reaches the teams that are online and have a phone login at the moment of sending. Voice is stored as clips in the private bucket `voice-messages`; delivery is about 1–2 s after release (not a live open line). Lock-screen alerts reuse the Phase 3 push relay. The site's security header now allows the microphone for the site itself.
 
 ## Phase 4: reports and admin panel
 
@@ -132,12 +143,20 @@ Background jobs (pg_cron): expire offers every 5 s; retry/redispatch/offline swe
 | `admin_update_user(p_user_id, p_full_name, p_phone, p_role, p_team_id, p_is_active)` | admin (limits for Administrator) | edit / deactivate a person |
 | `admin_import_towers(p_rows, p_dry_run)`, `admin_import_teams(p_rows, p_dry_run)` | admin | check (dry run) or load an Excel/CSV import |
 | `admin_reorder_questions(p_form_id, p_ids)`, `admin_duplicate_form(p_form_id, p_name)` | admin | form editor helpers |
+| `send_message(p_kind, p_text, p_audio_path, p_audio_seconds, p_audio_mime, p_target_type, p_target_team_id)` | Super Admin / Administrator / RRT member | send text or voice (phones always go to the control room) |
+| `messages_mark_heard(p_ids)` | RRT member | report messages as read / played |
 | `server_time()` | signed-in | database clock for the phone's countdown |
 | `register_push(...)`, `unregister_push(p_endpoint)` | signed-in | save / remove this phone's alert subscription |
 | `push_targets(p_secret, p_user_id)`, `push_report(...)` | the push relay only (shared secret) | look up phones, report delivery |
 
 Views for the apps: `v_rrt_live` (map markers), `v_dashboard_stats` (the 7 tiles), `v_incident_detail`, `v_incident_offers`, `v_report_incidents`, `v_tower_incident_counts`.
 Realtime tables: `rrt_teams`, `incidents`, `incident_assignments`, `notifications`, `towers`, `incident_photos`.
+
+## Tested vs not tested — Phase 5 (messages and voice)
+
+Tested: type-check and production build; 35-step database test (permissions, targets, "all online" rules, voice file rules, receipts, spam limit, operators locked out); 41-step browser test with a control-room session and a phone session and a simulated microphone (text and voice in both directions, unread, ticks, cancel and too-short presses, playback, operator redirect); Phase 2 (23), Phase 3 (35), Phase 4 reports (19) and admin (62) tests still pass. The test found and fixed a security header that blocked the microphone.
+
+Not testable outside your accounts: the real Android microphone and speaker, real Storage bucket policies, real Supabase live connection (4 s refresh is the back-up), lock-screen delivery via Google, iPhone.
 
 ## Tested vs not tested — Phase 4 (reports and admin)
 

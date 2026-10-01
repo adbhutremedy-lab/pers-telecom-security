@@ -197,6 +197,8 @@ Choose *Last 30 days*. Walk through the tiles and the chart. Click **PDF**, **Ex
 - **Excel import**: "Your 5,000 towers load from a spreadsheet; every row is checked first." Drop in the prepared sample file (see 6C).
 - **Users**: "Roles — Super Admin, Administrator, Operator, Response team."
 
+**7b. Messages and voice (2 min)** — new in Phase 5, see `PHASE5_RADIO_GUIDE.md` Part 6: message a team from the incident page, talk to it with the push-to-talk button, and broadcast to all online teams.
+
 **8. Close (1 min)**
 Summarise: automatic nearest-team dispatch, automatic escalation, live tracking, field report with photos, reports. Then take questions (6D).
 
