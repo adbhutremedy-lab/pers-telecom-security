@@ -1,0 +1,92 @@
+-- =====================================================================
+-- FILE: supabase/seed/seed_04_more_towers.sql
+-- PERS Telecom Security - Phase 2 seed: 70 more demo towers (GGN-031 .. GGN-100)
+--
+-- Phase 1 created 30 towers; the project brief asks for 100. This file adds
+-- the remaining 70, spread over Gurugram localities. Coordinates are
+-- realistic for each area but are demo data, not real operator sites.
+-- Run AFTER seed_01. Safe to run more than once (existing rows are updated).
+-- =====================================================================
+
+select set_config('pers.skip_audit', 'on', true);
+
+insert into public.towers (tower_number, site_name, lat, lng, region, status, address)
+values
+  ('GGN-031', 'Sector 15 Part 2 - Site 1', 28.467334, 77.036018, 'Old Gurugram', 'ACTIVE', 'Sector 15 Part 2 - Site 1, Gurugram'),
+  ('GGN-032', 'Sector 15 Part 2 - Site 2', 28.470083, 77.038520, 'Old Gurugram', 'ACTIVE', 'Sector 15 Part 2 - Site 2, Gurugram'),
+  ('GGN-033', 'Sector 15 Part 2 - Site 3', 28.467218, 77.034063, 'Old Gurugram', 'ACTIVE', 'Sector 15 Part 2 - Site 3, Gurugram'),
+  ('GGN-034', 'Sector 31 - Site 1', 28.456707, 77.048396, 'Old Gurugram', 'ACTIVE', 'Sector 31 - Site 1, Gurugram'),
+  ('GGN-035', 'Sector 31 - Site 2', 28.457984, 77.048335, 'Old Gurugram', 'ACTIVE', 'Sector 31 - Site 2, Gurugram'),
+  ('GGN-036', 'Sector 31 - Site 3', 28.457614, 77.049877, 'Old Gurugram', 'ACTIVE', 'Sector 31 - Site 3, Gurugram'),
+  ('GGN-037', 'Sector 40 - Site 1', 28.449757, 77.055606, 'Old Gurugram', 'ACTIVE', 'Sector 40 - Site 1, Gurugram'),
+  ('GGN-038', 'Sector 40 - Site 2', 28.446180, 77.055799, 'Old Gurugram', 'ACTIVE', 'Sector 40 - Site 2, Gurugram'),
+  ('GGN-039', 'Sector 40 - Site 3', 28.445275, 77.057217, 'Old Gurugram', 'ACTIVE', 'Sector 40 - Site 3, Gurugram'),
+  ('GGN-040', 'Sector 21 Dwarka Link - Site 1', 28.499648, 77.017203, 'Palam Vihar', 'ACTIVE', 'Sector 21 Dwarka Link - Site 1, Gurugram'),
+  ('GGN-041', 'Sector 21 Dwarka Link - Site 2', 28.501296, 77.016256, 'Palam Vihar', 'ACTIVE', 'Sector 21 Dwarka Link - Site 2, Gurugram'),
+  ('GGN-042', 'Sector 21 Dwarka Link - Site 3', 28.497972, 77.013261, 'Palam Vihar', 'ACTIVE', 'Sector 21 Dwarka Link - Site 3, Gurugram'),
+  ('GGN-043', 'Sector 9A - Site 1', 28.482359, 77.024005, 'Old Gurugram', 'ACTIVE', 'Sector 9A - Site 1, Gurugram'),
+  ('GGN-044', 'Sector 9A - Site 2', 28.481136, 77.024498, 'Old Gurugram', 'ACTIVE', 'Sector 9A - Site 2, Gurugram'),
+  ('GGN-045', 'Sector 9A - Site 3', 28.479095, 77.018034, 'Old Gurugram', 'ACTIVE', 'Sector 9A - Site 3, Gurugram'),
+  ('GGN-046', 'Sector 10A - Site 1', 28.487883, 77.030402, 'Old Gurugram', 'ACTIVE', 'Sector 10A - Site 1, Gurugram'),
+  ('GGN-047', 'Sector 10A - Site 2', 28.487545, 77.029702, 'Old Gurugram', 'MAINTENANCE', 'Sector 10A - Site 2, Gurugram'),
+  ('GGN-048', 'Sector 10A - Site 3', 28.491635, 77.031428, 'Old Gurugram', 'ACTIVE', 'Sector 10A - Site 3, Gurugram'),
+  ('GGN-049', 'Sector 18 Udyog Vihar - Site 1', 28.495542, 77.064673, 'Udyog Vihar', 'ACTIVE', 'Sector 18 Udyog Vihar - Site 1, Gurugram'),
+  ('GGN-050', 'Sector 18 Udyog Vihar - Site 2', 28.496476, 77.067045, 'Udyog Vihar', 'ACTIVE', 'Sector 18 Udyog Vihar - Site 2, Gurugram'),
+  ('GGN-051', 'Sector 18 Udyog Vihar - Site 3', 28.494456, 77.067291, 'Udyog Vihar', 'ACTIVE', 'Sector 18 Udyog Vihar - Site 3, Gurugram'),
+  ('GGN-052', 'Sector 18 Udyog Vihar - Site 4', 28.495600, 77.067989, 'Udyog Vihar', 'ACTIVE', 'Sector 18 Udyog Vihar - Site 4, Gurugram'),
+  ('GGN-053', 'Sector 17 Udyog Vihar - Site 1', 28.503315, 77.075045, 'Udyog Vihar', 'ACTIVE', 'Sector 17 Udyog Vihar - Site 1, Gurugram'),
+  ('GGN-054', 'Sector 17 Udyog Vihar - Site 2', 28.507751, 77.075701, 'Udyog Vihar', 'ACTIVE', 'Sector 17 Udyog Vihar - Site 2, Gurugram'),
+  ('GGN-055', 'Sector 17 Udyog Vihar - Site 3', 28.505937, 77.077917, 'Udyog Vihar', 'ACTIVE', 'Sector 17 Udyog Vihar - Site 3, Gurugram'),
+  ('GGN-056', 'DLF Phase 1 - Site 1', 28.473311, 77.097440, 'Cyber City', 'ACTIVE', 'DLF Phase 1 - Site 1, Gurugram'),
+  ('GGN-057', 'DLF Phase 1 - Site 2', 28.477984, 77.097854, 'Cyber City', 'ACTIVE', 'DLF Phase 1 - Site 2, Gurugram'),
+  ('GGN-058', 'DLF Phase 1 - Site 3', 28.475126, 77.094678, 'Cyber City', 'ACTIVE', 'DLF Phase 1 - Site 3, Gurugram'),
+  ('GGN-059', 'DLF Phase 1 - Site 4', 28.473072, 77.095403, 'Cyber City', 'ACTIVE', 'DLF Phase 1 - Site 4, Gurugram'),
+  ('GGN-060', 'DLF Phase 2 - Site 1', 28.486842, 77.091433, 'Cyber City', 'ACTIVE', 'DLF Phase 2 - Site 1, Gurugram'),
+  ('GGN-061', 'DLF Phase 2 - Site 2', 28.492708, 77.087218, 'Cyber City', 'ACTIVE', 'DLF Phase 2 - Site 2, Gurugram'),
+  ('GGN-062', 'DLF Phase 2 - Site 3', 28.490856, 77.089790, 'Cyber City', 'ACTIVE', 'DLF Phase 2 - Site 3, Gurugram'),
+  ('GGN-063', 'DLF Phase 4 - Site 1', 28.462875, 77.088102, 'Golf Course Road', 'ACTIVE', 'DLF Phase 4 - Site 1, Gurugram'),
+  ('GGN-064', 'DLF Phase 4 - Site 2', 28.465701, 77.090887, 'Golf Course Road', 'ACTIVE', 'DLF Phase 4 - Site 2, Gurugram'),
+  ('GGN-065', 'DLF Phase 4 - Site 3', 28.462698, 77.089786, 'Golf Course Road', 'ACTIVE', 'DLF Phase 4 - Site 3, Gurugram'),
+  ('GGN-066', 'DLF Phase 4 - Site 4', 28.466006, 77.093411, 'Golf Course Road', 'ACTIVE', 'DLF Phase 4 - Site 4, Gurugram'),
+  ('GGN-067', 'Sector 28 DLF - Site 1', 28.475319, 77.082419, 'Golf Course Road', 'ACTIVE', 'Sector 28 DLF - Site 1, Gurugram'),
+  ('GGN-068', 'Sector 28 DLF - Site 2', 28.476188, 77.080653, 'Golf Course Road', 'ACTIVE', 'Sector 28 DLF - Site 2, Gurugram'),
+  ('GGN-069', 'Sector 28 DLF - Site 3', 28.477099, 77.082013, 'Golf Course Road', 'ACTIVE', 'Sector 28 DLF - Site 3, Gurugram'),
+  ('GGN-070', 'Sector 44 - Site 1', 28.449852, 77.080691, 'Golf Course Road', 'ACTIVE', 'Sector 44 - Site 1, Gurugram'),
+  ('GGN-071', 'Sector 44 - Site 2', 28.449531, 77.076561, 'Golf Course Road', 'ACTIVE', 'Sector 44 - Site 2, Gurugram'),
+  ('GGN-072', 'Sector 44 - Site 3', 28.448383, 77.074732, 'Golf Course Road', 'ACTIVE', 'Sector 44 - Site 3, Gurugram'),
+  ('GGN-073', 'Sector 45 - Site 1', 28.441089, 77.070681, 'Golf Course Road', 'MAINTENANCE', 'Sector 45 - Site 1, Gurugram'),
+  ('GGN-074', 'Sector 45 - Site 2', 28.439708, 77.070160, 'Golf Course Road', 'ACTIVE', 'Sector 45 - Site 2, Gurugram'),
+  ('GGN-075', 'Sector 45 - Site 3', 28.439927, 77.072951, 'Golf Course Road', 'ACTIVE', 'Sector 45 - Site 3, Gurugram'),
+  ('GGN-076', 'Sector 47 Sohna Road - Site 1', 28.428321, 77.047899, 'Sohna Road', 'ACTIVE', 'Sector 47 Sohna Road - Site 1, Gurugram'),
+  ('GGN-077', 'Sector 47 Sohna Road - Site 2', 28.430079, 77.050283, 'Sohna Road', 'ACTIVE', 'Sector 47 Sohna Road - Site 2, Gurugram'),
+  ('GGN-078', 'Sector 47 Sohna Road - Site 3', 28.432156, 77.048405, 'Sohna Road', 'ACTIVE', 'Sector 47 Sohna Road - Site 3, Gurugram'),
+  ('GGN-079', 'Sector 48 Sohna Road - Site 1', 28.422851, 77.047320, 'Sohna Road', 'ACTIVE', 'Sector 48 Sohna Road - Site 1, Gurugram'),
+  ('GGN-080', 'Sector 48 Sohna Road - Site 2', 28.418717, 77.047918, 'Sohna Road', 'ACTIVE', 'Sector 48 Sohna Road - Site 2, Gurugram'),
+  ('GGN-081', 'Sector 48 Sohna Road - Site 3', 28.417189, 77.046325, 'Sohna Road', 'ACTIVE', 'Sector 48 Sohna Road - Site 3, Gurugram'),
+  ('GGN-082', 'Sector 51 - Site 1', 28.416996, 77.060106, 'Sohna Road', 'ACTIVE', 'Sector 51 - Site 1, Gurugram'),
+  ('GGN-083', 'Sector 51 - Site 2', 28.414670, 77.063257, 'Sohna Road', 'ACTIVE', 'Sector 51 - Site 2, Gurugram'),
+  ('GGN-084', 'Sector 51 - Site 3', 28.418271, 77.062397, 'Sohna Road', 'ACTIVE', 'Sector 51 - Site 3, Gurugram'),
+  ('GGN-085', 'Sector 52 Wazirabad - Site 1', 28.439854, 77.016950, 'Sohna Road', 'ACTIVE', 'Sector 52 Wazirabad - Site 1, Gurugram'),
+  ('GGN-086', 'Sector 52 Wazirabad - Site 2', 28.438365, 77.019989, 'Sohna Road', 'ACTIVE', 'Sector 52 Wazirabad - Site 2, Gurugram'),
+  ('GGN-087', 'Sector 52 Wazirabad - Site 3', 28.437177, 77.021733, 'Sohna Road', 'ACTIVE', 'Sector 52 Wazirabad - Site 3, Gurugram'),
+  ('GGN-088', 'Sector 55 - Site 1', 28.429379, 77.099646, 'Golf Course Road', 'ACTIVE', 'Sector 55 - Site 1, Gurugram'),
+  ('GGN-089', 'Sector 55 - Site 2', 28.426598, 77.096501, 'Golf Course Road', 'ACTIVE', 'Sector 55 - Site 2, Gurugram'),
+  ('GGN-090', 'Sector 55 - Site 3', 28.430564, 77.103025, 'Golf Course Road', 'ACTIVE', 'Sector 55 - Site 3, Gurugram'),
+  ('GGN-091', 'Sector 58 - Site 1', 28.402081, 77.102056, 'Golf Course Road', 'INACTIVE', 'Sector 58 - Site 1, Gurugram'),
+  ('GGN-092', 'Sector 58 - Site 2', 28.403235, 77.100848, 'Golf Course Road', 'ACTIVE', 'Sector 58 - Site 2, Gurugram'),
+  ('GGN-093', 'Sector 58 - Site 3', 28.406763, 77.103195, 'Golf Course Road', 'ACTIVE', 'Sector 58 - Site 3, Gurugram'),
+  ('GGN-094', 'Sector 62 Golf Course Ext - Site 1', 28.406179, 77.090948, 'Golf Course Road', 'ACTIVE', 'Sector 62 Golf Course Ext - Site 1, Gurugram'),
+  ('GGN-095', 'Sector 62 Golf Course Ext - Site 2', 28.402583, 77.088694, 'Golf Course Road', 'ACTIVE', 'Sector 62 Golf Course Ext - Site 2, Gurugram'),
+  ('GGN-096', 'Sector 62 Golf Course Ext - Site 3', 28.405581, 77.091887, 'Golf Course Road', 'ACTIVE', 'Sector 62 Golf Course Ext - Site 3, Gurugram'),
+  ('GGN-097', 'Sector 66 - Site 1', 28.401150, 77.077944, 'Golf Course Road', 'ACTIVE', 'Sector 66 - Site 1, Gurugram'),
+  ('GGN-098', 'Sector 66 - Site 2', 28.399543, 77.075444, 'Golf Course Road', 'ACTIVE', 'Sector 66 - Site 2, Gurugram'),
+  ('GGN-099', 'Sector 66 - Site 3', 28.396060, 77.078616, 'Golf Course Road', 'ACTIVE', 'Sector 66 - Site 3, Gurugram'),
+  ('GGN-100', 'Sector 70 - Site 1', 28.391208, 77.052632, 'Sohna Road', 'ACTIVE', 'Sector 70 - Site 1, Gurugram')
+on conflict (tower_number) do update
+  set site_name = excluded.site_name,
+      lat       = excluded.lat,
+      lng       = excluded.lng,
+      region    = excluded.region,
+      status    = excluded.status,
+      address   = excluded.address,
+      deleted_at = null;
