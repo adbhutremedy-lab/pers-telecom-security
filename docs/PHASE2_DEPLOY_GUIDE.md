@@ -69,6 +69,14 @@ If a key starts with `sb_secret_` or `sk.`, **stop — that is the wrong one**.
    - `NEXT_PUBLIC_MAPBOX_TOKEN`
 5. Press **Deploy**. Wait 2–4 minutes. Fireworks screen = success. Click the preview picture to open the website; note its address, e.g. `https://pers-telecom-security.vercel.app` (copy it into `pers-keys.txt`).
 
+**Common mistakes (all seen in real life — check these first if login says "not configured" or an error):**
+
+- The three names must be spelled **exactly**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_MAPBOX_TOKEN` (capital letters, underscores; "SUPABASE" with an A, not "SUPERBASE").
+- The Supabase URL is only `https://xxxx.supabase.co`. Nothing after `.co` (no `/rest/v1/`). The website now strips extra parts by itself, but keep it clean.
+- Vercel may warn that `NEXT_PUBLIC` values are visible in the browser. That is fine for these three — they are meant to be public. Do **not** rename them.
+- After any change to a variable you must **Redeploy** (Deployments → latest → ⋯ → Redeploy). Without it nothing changes.
+- Test in a private (incognito) window, so an old copy of the page is not shown.
+
 If the build fails: open the failed deployment → copy the last 20 lines of the log → send them to the lead developer.
 
 If you ever **change** an environment variable: Vercel → Project → Deployments → the latest one → **⋯ → Redeploy**. (The values are baked in at build time; the change does nothing until you redeploy.)
@@ -101,11 +109,11 @@ Open the website. You should see the login page titled **PERS Telecom Security**
 | 1 | Sign in `adbhutremedy@gmail.com` / `PersDemo@2026` | The **Dashboard**: seven number tiles and a map of Gurugram with coloured team markers |
 | 2 | Look at the map | Towers as dots (zoom in to split the clusters), 10 teams. Teams RRT-02…10 are green |
 | 3 | Left menu → **Towers** | 100 towers; search for `Cyber` finds Cyber Hub Tower |
-| 4 | Left menu → **RRT Teams** | 10 teams; RRT-01 is shown OFFLINE until the phone app exists (Phase 3) |
+| 4 | Left menu → **RRT Teams** | 10 teams; RRT-01 is shown OFFLINE until the phone goes online (Phase 3) |
 | 5 | Left menu → **Incidents** | 54 historical incidents; click one → timeline, offers and the resolution report |
 | 6 | Left menu → **Demo Controller** | Autopilot switch, speed and delay settings |
 | 7 | Sign out; sign in `operator1@pers.example` | Same dashboard, but **no Demo Controller** in the menu |
-| 8 | Sign out; sign in `rrt01@pers.example` | A "mobile app arrives in Phase 3" screen, not the dashboard |
+| 8 | Sign out; sign in `rrt01@pers.example` | The phone app (big GO ONLINE button), not the dashboard (Phase 3) |
 
 If the map area is grey/blank: the Mapbox token is wrong or restricted to the wrong address (Part 5). If login says "profile": run the Phase 1 Part 5 check.
 
@@ -139,5 +147,5 @@ The real phone (RRT-01) is never moved by the Demo Controller. If it is OFFLINE 
 
 | Phase | Result |
 |---|---|
-| 3 | RRT mobile app (installable PWA on the Android phone): siren alert with 30-second countdown, accept/reject, navigation, live GPS, resolution form, photos, push notifications |
+| 3 | RRT mobile app (installable PWA on the Android phone): siren alert with 30-second countdown, accept/reject, navigation, live GPS, resolution form, photos, push notifications — **done, see `PHASE3_PHONE_GUIDE.md`** |
 | 4 | Reports (PDF / Excel / CSV), Admin panel (towers, teams, users, forms, Excel import), final rehearsal |
