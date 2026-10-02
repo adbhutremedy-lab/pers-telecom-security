@@ -8,6 +8,7 @@ import { BarChart3, Gauge, LayoutDashboard, ListChecks, LogOut, Menu, MapPin, Me
 import { BRAND } from "@/lib/constants";
 import { isAdminRole } from "@/lib/types";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { useMapSettings } from "@/lib/mapSettings";
 import { useProfile } from "./ProfileContext";
 import NotificationBell from "./NotificationBell";
 import { RadioProvider, useRadio } from "./radio/RadioContext";
@@ -45,6 +46,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 function Shell({ children }: { children: React.ReactNode }) {
   const profile = useProfile();
   const radio = useRadio();
+  const mapCfg = useMapSettings();
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -120,7 +122,7 @@ function Shell({ children }: { children: React.ReactNode }) {
             <Menu className="h-5 w-5" />
           </button>
           <Radio className="hidden h-4 w-4 text-green-600 sm:block" aria-hidden />
-          <span className="hidden text-sm font-medium text-slate-600 sm:block">Live · Gurugram, Haryana</span>
+          <span className="hidden text-sm font-medium text-slate-600 sm:block">Live{mapCfg.loaded ? ` · ${mapCfg.city}` : ""}</span>
           <div className="flex-1" />
           <NotificationBell />
           <div className="hidden text-right leading-tight sm:block">

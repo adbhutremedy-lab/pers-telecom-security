@@ -6,6 +6,7 @@ import { useProfile } from "@/components/ProfileContext";
 import { useToast } from "@/components/Toast";
 import { Button, Spinner, inputCls } from "@/components/ui";
 import { cleanError } from "@/lib/format";
+import MapLocationCard from "./MapLocationCard";
 
 interface Def {
   key: string;
@@ -27,7 +28,6 @@ const DEFS: Def[] = [
   { key: "default_speed_kmh", label: "Assumed speed", unit: "km/h", min: 5, max: 120, help: "Used for the arrival-time estimate when a team has not started moving." },
   { key: "eta_fresh_seconds", label: "Trust road ETA for", unit: "seconds", min: 10, max: 3600, help: "How long a road-route ETA is trusted before the straight-line estimate is used." },
   { key: "location_retention_days", label: "Keep GPS history for", unit: "days", min: 1, max: 3650, help: "Older GPS history is deleted automatically." },
-  { key: "map_default_zoom", label: "Map zoom on opening", unit: "", min: 1, max: 20, help: "Bigger number = closer in." },
 ];
 
 interface SettingRow {
@@ -86,13 +86,15 @@ export default function SettingsAdmin() {
   }
 
   if (rows === null) return <div className="grid place-items-center p-12"><Spinner /></div>;
-  const others = rows.filter((r) => !DEFS.some((d) => d.key === r.key));
+  const MAP_KEYS = ["map_default_center", "map_default_zoom", "demo_city"]; // edited in the Demo location card
+  const others = rows.filter((r) => !DEFS.some((d) => d.key === r.key) && !MAP_KEYS.includes(r.key));
 
   return (
     <div className="space-y-4" data-testid="admin-settings">
       <p className="text-sm text-slate-600">
         {isSuper ? "These rules control how dispatch behaves. Changes apply to new offers straight away." : "These rules control how dispatch behaves. Only a Super Admin can change them."}
       </p>
+      <MapLocationCard />
       <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
         {DEFS.filter((d) => byKey(d.key)).map((d) => (
           <div key={d.key} className="grid items-center gap-2 border-b border-slate-100 px-4 py-3 last:border-0 sm:grid-cols-[1fr_180px]">

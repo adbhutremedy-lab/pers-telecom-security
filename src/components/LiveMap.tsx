@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import type * as GeoJSON from "geojson";
 import type { GeoJSONSource, Map as MapboxMap, Marker } from "mapbox-gl";
 import { MAPBOX_TOKEN } from "@/lib/env";
-import { DEMO_CENTER, DEMO_ZOOM, TEAM_COLOR, TOWER_COLOR } from "@/lib/constants";
+import { TEAM_COLOR, TOWER_COLOR } from "@/lib/constants";
+import { useMapSettings } from "@/lib/mapSettings";
 import type { IncidentDetail, RrtLive, Tower } from "@/lib/types";
 
 export interface MapFocus {
@@ -91,6 +92,8 @@ export default function LiveMap({ towers, activeTowerIds, teams, incidents, focu
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapboxMap | null>(null);
   const readyRef = useRef(false);
+  const cfg = useMapSettings(); // demo location chosen in Admin -> Settings
+  const centreKey = useRef("");
   const markers = useRef<Map<string, { marker: Marker; el: HTMLDivElement; lng: number; lat: number; raf: number | null }>>(new Map());
   const incidentMarkers = useRef<Map<string, Marker>>(new Map());
   const mapboxRef = useRef<typeof import("mapbox-gl").default | null>(null);
@@ -101,7 +104,9 @@ export default function LiveMap({ towers, activeTowerIds, teams, incidents, focu
 
   // ---- create the map once ------------------------------------------------
   useEffect(() => {
+    if (!cfg.loaded) return; // wait until the saved demo location is known
     let disposed = false;
+    centreKey.current = `${cfg.lat},${cfg.lng},${cfg.zoom}`;
     (async () => {
       const mapboxgl = (await import("mapbox-gl")).default;
       if (disposed || !box.current) return;
@@ -111,8 +116,8 @@ export default function LiveMap({ towers, activeTowerIds, teams, incidents, focu
       const map = new mapboxgl.Map({
         container: box.current,
         style: "mapbox://styles/mapbox/streets-v12",
-        center: [DEMO_CENTER.lng, DEMO_CENTER.lat],
-        zoom: DEMO_ZOOM,
+        center: [cfg.lng, cfg.lat],
+        zoom: cfg.zoom,
         attributionControl: true,
       });
       mapRef.current = map;
@@ -215,7 +220,15 @@ export default function LiveMap({ towers, activeTowerIds, teams, incidents, focu
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cfg.loaded]);
+
+  // ---- the demo location was changed while the map is open: fly there ------
+  useEffect(() => {
+    const key = `${cfg.lat},${cfg.lng},${cfg.zoom}`;
+    if (!cfg.loaded || !mapRef.current || key === centreKey.current) return;
+    centreKey.current = key;
+    mapRef.current.flyTo({ center: [cfg.lng, cfg.lat], zoom: cfg.zoom, speed: 1.6 });
+  }, [cfg.loaded, cfg.lat, cfg.lng, cfg.zoom]);
 
   // ---- push the latest data into the map ------------------------------------
   function syncAll() {
