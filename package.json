@@ -1,6 +1,6 @@
 {
   "name": "pers-telecom-security",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "PERS Telecom Security - Incident Management and RRT Dispatch System",
   "scripts": {

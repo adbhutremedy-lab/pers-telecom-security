@@ -43,6 +43,7 @@ PERS/
     ├─ PASTE_3_phase3_phone_support.sql    migration 0011 (server clock + optional push) — run once for Phase 3
     ├─ PASTE_4_phase4_admin.sql            migration 0012 (admin functions) — run once for Phase 4
     ├─ PASTE_5_phase5_radio.sql            migration 0013 (messages, receipts, voice bucket) — run once for Phase 5
+    ├─ PASTE_6_demo_location.sql           migration 0014 (choose the demo city / move simulated teams) — run once for update 5b
     ├─ migrations/                         the same files, separately, in run order
     │   ├─ 0001_extensions_and_enums.sql
     │   ├─ 0002_tables.sql
@@ -57,6 +58,7 @@ PERS/
     │   ├─ 0011_phone_support_and_push.sql   Phase 3: server_time(), push subscriptions + relay hooks
     │   ├─ 0012_admin_and_import.sql         Phase 4: create login, set password, edit user, import towers/teams, reorder/duplicate forms
     │   └─ 0013_messages_and_voice.sql       Phase 5: messages, read receipts, send_message, private voice-messages bucket
+    │   └─ 0014_map_location.sql                Update 5b: demo city validation + move_simulated_teams
     ├─ seed/
     │   ├─ seed_01_towers_and_teams.sql    30 Gurugram towers, 10 RRT teams
     │   ├─ seed_02_users.sql               14 login accounts (+ profiles)
@@ -181,3 +183,7 @@ Not testable outside your own accounts (check with the smoke test in the deploy 
 Tested on a local PostgreSQL 16 with a stand-in for Supabase's auth/storage/cron: all 10 migrations and 3 seeds run clean on an empty database and again on top of themselves; 57-step dispatch/security test passes; works even when Supabase's automatic table grants are absent.
 
 Not testable outside a real Supabase project (the guide has you run the same two test scripts there): creating login accounts through SQL, the storage bucket policies, real pg_cron scheduling, realtime delivery, push notifications (Phase 3).
+
+
+## Update 5b — choose the demo city
+Admin → Settings → **Demo location** sets where the map opens (Lagos, Accra, Dubai, India…) and can move the simulated teams there. See `docs/PHASE5B_DEMO_LOCATION.md`.
