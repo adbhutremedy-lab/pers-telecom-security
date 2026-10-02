@@ -192,9 +192,20 @@ export default function TowersAdmin() {
               <Field label="Latitude"><input className={inputCls} inputMode="decimal" value={edit.lat} onChange={(e) => setEdit({ ...edit, lat: e.target.value })} placeholder="28.4595" aria-label="Latitude" /></Field>
               <Field label="Longitude"><input className={inputCls} inputMode="decimal" value={edit.lng} onChange={(e) => setEdit({ ...edit, lng: e.target.value })} placeholder="77.0266" aria-label="Longitude" /></Field>
             </div>
-            <Field label="Region" hint="Used for filters and reports.">
-              <input className={inputCls} list="admin-regions" value={edit.region} onChange={(e) => setEdit({ ...edit, region: e.target.value })} aria-label="Region" />
+            <Field label="Region" hint="Pick an existing region or just type a new name (for example Lagos). A new region is created automatically when you save.">
+              <input className={inputCls} list="admin-regions" value={edit.region} onChange={(e) => setEdit({ ...edit, region: e.target.value })} placeholder="Type a region name, e.g. Lagos" aria-label="Region" />
               <datalist id="admin-regions">{regions.map((r) => <option key={r} value={r} />)}</datalist>
+              {regions.length > 0 && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+                  <span className="text-slate-500">Existing:</span>
+                  {regions.map((r) => (
+                    <button key={r} type="button" onClick={() => setEdit({ ...edit, region: r })} className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-slate-600 hover:bg-slate-50">{r}</button>
+                  ))}
+                </div>
+              )}
+              {edit.region.trim() !== "" && !regions.some((r) => r.toLowerCase() === edit.region.trim().toLowerCase()) && (
+                <p className="mt-1 text-xs font-medium text-emerald-700" data-testid="new-region-note">New region &ldquo;{edit.region.trim()}&rdquo; will be created.</p>
+              )}
             </Field>
             <Field label="Address (optional)"><input className={inputCls} value={edit.address} onChange={(e) => setEdit({ ...edit, address: e.target.value })} aria-label="Address" /></Field>
             {err && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{err}</p>}

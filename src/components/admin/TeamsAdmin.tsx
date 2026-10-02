@@ -165,7 +165,7 @@ export default function TeamsAdmin() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Mobile"><input className={inputCls} value={edit.mobile} onChange={(e) => setEdit({ ...edit, mobile: e.target.value })} aria-label="Mobile" /></Field>
-              <Field label="Region"><input className={inputCls} value={edit.region} onChange={(e) => setEdit({ ...edit, region: e.target.value })} aria-label="Region" /></Field>
+              <Field label="Region" hint="Type a new name to create a new region."><input className={inputCls} list="team-regions" value={edit.region} onChange={(e) => setEdit({ ...edit, region: e.target.value })} placeholder="e.g. Lagos" aria-label="Region" /><datalist id="team-regions">{[...new Set((rows ?? []).map((r) => r.region).filter(Boolean) as string[])].sort().map((r) => <option key={r} value={r} />)}</datalist></Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Vehicle model"><input className={inputCls} value={edit.vehicle_model} onChange={(e) => setEdit({ ...edit, vehicle_model: e.target.value })} aria-label="Vehicle model" /></Field>
